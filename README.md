@@ -1,5 +1,3 @@
-# Arduino Base ComputerVision Counter
-
 # Finger Counting with OpenCV and Arduino
 
 This project integrates OpenCV and Arduino to create a system that counts the number of fingers shown to a camera and lights up the corresponding number of LEDs on a breadboard. The system uses computer vision to detect and count fingers in live footage and communicates this information to an Arduino, which then controls the LEDs.
