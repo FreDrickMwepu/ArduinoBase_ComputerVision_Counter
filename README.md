@@ -1,48 +1,48 @@
-# Finger Counting with OpenCV and Arduino
+### Project Summary
 
-This project integrates OpenCV and Arduino to create a system that counts the number of fingers shown to a camera and lights up the corresponding number of LEDs on a breadboard. The system uses computer vision to detect and count fingers in live footage and communicates this information to an Arduino, which then controls the LEDs.
+This project integrates OpenCV for hand gesture detection and PyFirmata to control LEDs connected to an Arduino based on the detected gestures. The goal is to turn on or off the LEDs according to the number of fingers detected by the camera.
 
-## Components
+### Installation Steps
 
-- **Arduino Uno**
-- **USB cable**
-- **Breadboard**
-- **Jumper wires**
-- **LEDs (5)**
-- **Resistors (5)**
+1. **Install Python**:
+   - Ensure you have Python installed. You can download it from [python.org](https://www.python.org/).
 
-## Setup
+2. **Install Required Libraries**:
+   - Open a terminal or command prompt and run the following commands to install the necessary libraries:
+     
+     ```sh
+     pip install opencv-python pyfirmata cvzone
+     ```
 
-1. **Hardware Setup**:
-    - Connect each LED to the breadboard.
-    - Connect a resistor in series with each LED.
-    - Connect the other end of each resistor to a digital pin on the Arduino (e.g., pins 2, 3, 4, 5, 6).
-    - Connect the ground (GND) of the Arduino to the ground rail on the breadboard.
-    - Ensure each LED's cathode is connected to the ground rail.
+3. **Upload Firmata Firmware to Arduino**:
+   - Connect your Arduino to your computer.
+   - Open the Arduino IDE.
+   - Go to `File > Examples > Firmata > StandardFirmata`.
+   - Select your Arduino board and port from the `Tools` menu.
+   - Upload the sketch to your Arduino.
 
-2. **Software Setup**:
-    - Install the Arduino IDE.
-    - Install Python and the OpenCV library.
+4. **Identify the Serial Port**:
+   - **macOS**:
+     ```sh
+     ls /dev/tty.*
+     ```
+   - **Linux**:
+     ```sh
+     ls /dev/tty*
+     ```
+   - Look for entries like `/dev/tty.usbmodemXXXXX` or `/dev/ttyUSB0`.
 
-## How It Works
+5. **Run the Combined Script**:
+   - Replace `'/dev/tty.usbmodemXXXXX'` with your actual port in the script.
+   - Save the following combined script as `controller.py`:
 
-1. **OpenCV Finger Counting**:
-    - The system captures live footage from a camera.
-    - OpenCV processes the video feed to detect the number of fingers shown.
-    - The number of detected fingers is sent to the Arduino via serial communication.
+6. **Run the Script**:
+   - Ensure your Arduino is connected and the correct port is specified.
+   - Run the script:
+     ```sh
+     python3 controller.py
+     ```
 
-2. **Arduino LED Control**:
-    - The Arduino receives the finger count from the OpenCV script.
-    - Based on the received count, the Arduino lights up the corresponding number of LEDs.
+### Project Description
 
-## Notes
-
-- Ensure the Arduino is connected to the correct COM port.
-- Adjust the OpenCV finger counting function to accurately detect fingers.
-- Modify the pin numbers in the Arduino code if you connect the LEDs to different pins.
-
-## Conclusion
-
-This project demonstrates how to combine computer vision with microcontroller control to create interactive systems. By leveraging OpenCV for image processing and Arduino for hardware control, we can build various innovative applications.
-
-Feel free to adjust the descriptions or details as per your specific implementation or preferences.
+This project combines computer vision and hardware control to create an interactive application. Using OpenCV, it detects the number of fingers shown to a webcam. Based on the number of detected fingers, it controls LEDs connected to an Arduino. The project showcases the integration of computer vision for gesture recognition and microcontroller control for physical outputs.
