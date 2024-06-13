@@ -35,66 +35,6 @@ This project integrates OpenCV and Arduino to create a system that counts the nu
     - The Arduino receives the finger count from the OpenCV script.
     - Based on the received count, the Arduino lights up the corresponding number of LEDs.
 
-## Usage
-
-1. **Upload the Arduino Code**:
-    ```cpp
-    void setup() {
-        Serial.begin(9600);
-        for (int i = 2; i <= 6; i++) {
-            pinMode(i, OUTPUT);
-        }
-    }
-
-    void loop() {
-        if (Serial.available() > 0) {
-            int fingers = Serial.parseInt();
-            for (int i = 2; i <= 6; i++) {
-                if (i - 1 <= fingers) {
-                    digitalWrite(i, HIGH);
-                } else {
-                    digitalWrite(i, LOW);
-                }
-            }
-        }
-    }
-    ```
-
-2. **Run the OpenCV Script**:
-    ```python
-    import cv2
-    import serial
-    import time
-
-    # Set up serial communication
-    ser = serial.Serial('COM3', 9600)
-    time.sleep(2)  # Wait for the serial connection to initialize
-
-    def count_fingers(frame):
-        # Implement finger counting logic using OpenCV
-        # This is a placeholder implementation
-        # Replace with actual finger detection code
-        return 3  # Assume 3 fingers are detected for this example
-
-    cap = cv2.VideoCapture(0)
-
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
-
-        fingers = count_fingers(frame)
-        ser.write(str(fingers).encode())
-
-        cv2.imshow('Frame', frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
-    cap.release()
-    cv2.destroyAllWindows()
-    ser.close()
-    ```
-
 ## Notes
 
 - Ensure the Arduino is connected to the correct COM port.
@@ -104,7 +44,5 @@ This project integrates OpenCV and Arduino to create a system that counts the nu
 ## Conclusion
 
 This project demonstrates how to combine computer vision with microcontroller control to create interactive systems. By leveraging OpenCV for image processing and Arduino for hardware control, we can build various innovative applications.
-
----
 
 Feel free to adjust the descriptions or details as per your specific implementation or preferences.
