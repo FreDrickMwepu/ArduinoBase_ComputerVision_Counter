@@ -60,8 +60,6 @@ This project integrates OpenCV for hand gesture detection and PyFirmata to contr
 
 This project combines computer vision and hardware control to create an interactive application. Using OpenCV, it detects the number of fingers shown to a webcam. Based on the number of detected fingers, it controls LEDs connected to an Arduino. The project showcases the integration of computer vision for gesture recognition and microcontroller control for physical outputs.
 
-![IMG_5130]( )
-
 <img src="https://github.com/FreDrickMwepu/ArduinoBase_ComputerVision_Counter/assets/88320754/24b85a2f-0e13-452e-a60f-efbbc76107eb" width="700" />
 
 <h2 align="left">Let's Connect:</h2>
