@@ -1,5 +1,5 @@
 # AURTHOR: FREDRICK MWEPU
-# DATE: 10/10/2023
+# DATE: 13/06/2024
 import cv2
 import pyfirmata
 from cvzone.HandTrackingModule import HandDetector
