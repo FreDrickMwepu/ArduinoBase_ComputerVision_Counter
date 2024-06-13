@@ -2,6 +2,8 @@
 
 This project integrates OpenCV for hand gesture detection and PyFirmata to control LEDs connected to an Arduino based on the detected gestures. The goal is to turn on or off the LEDs according to the number of fingers detected by the camera.
 
+![Spectacular Allis](https://github.com/FreDrickMwepu/ArduinoBase_ComputerVision_Counter/assets/88320754/2c8d740c-f98a-4f18-b41a-6e98a345ede1)
+
 ### Installation Steps
 
 1. **Install Python**:
