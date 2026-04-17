@@ -25,7 +25,7 @@ Don't worry if you've never used these before; we'll explain each step!
 ## Tools and Software
 
 We'll use these tools:
-- **Python**: A programming language for writing the code.
+- **Python 3.10.x**: The language for this project. **Use Python 3.10** (for example 3.10.12) for the best compatibility—OpenCV, PyFirmata, and CVZone are most predictable on 3.10.x. Newer versions may work but are not guaranteed. Check with `python3.10 --version` (or `python --version`) after install.
 - **OpenCV**: A library for computer vision (detecting fingers).
 - **PyFirmata**: Helps Python talk to Arduino.
 - **CVZone**: Makes hand detection easier.
@@ -36,23 +36,38 @@ We'll use these tools:
 
 ## Step-by-Step Setup
 
-Follow these steps carefully. If something doesn't work, check the Troubleshooting section at the end.
+Follow these steps carefully. **Recommended order:** install **Python 3.10.x**, create and activate a **virtual environment**, run **`pip install -r requirements.txt`**, complete the Arduino and hardware steps, then run **`python controller.py`**. If something doesn't work, check the Troubleshooting section at the end.
 
-### 1. Install Python
+### 1. Install Python 3.10.x and create a virtual environment
 
-Python is the language we'll use. If you don't have it:
-- Go to [python.org](https://www.python.org/) and download the latest version for your OS.
-- Follow the installer instructions.
-- Open a terminal (on macOS, search for "Terminal" in Spotlight) and type `python3 --version`. You should see a version number like "Python 3.10.0". If not, try `python --version`.
+**Use Python 3.10.x for the fewest surprises** with this stack (OpenCV, PyFirmata, CVZone). Install it from [python.org](https://www.python.org/downloads/) or your OS package manager if you do not already have it. Confirm:
 
-### 2. Install Required Libraries
-
-These are extra tools for Python. Open your terminal and run:
+```bash
+python3.10 --version
 ```
-pip install opencv-python pyfirmata cvzone
+
+You should see something like `Python 3.10.x`.
+
+**Create and use a virtual environment** (keeps project packages isolated from your system Python):
+
+| Step | Action |
+|------|--------|
+| Create the env | From the project folder (where `requirements.txt` lives), run: `python3.10 -m venv venv` (on Windows, if `python3.10` is not recognized, try `py -3.10 -m venv venv`) |
+| **Windows** | Activate: `venv\Scripts\activate` |
+| **macOS / Linux** | Activate: `source venv/bin/activate` |
+
+After activation, your terminal usually shows `(venv)` at the start of the line. Use this same terminal for the next step.
+
+### 2. Install dependencies from `requirements.txt`
+
+With the virtual environment **activated**, install everything the project needs:
+
+```bash
+pip install -r requirements.txt
 ```
-- `pip` is Python's package installer.
-- This might take a few minutes. If you get errors, make sure Python is installed correctly.
+
+- `pip` is Python’s package installer; `-r requirements.txt` installs the pinned versions listed for this project.
+- This may take a few minutes. If installation fails, confirm you are on Python 3.10.x and that the venv is active.
 
 ### 3. Hardware Setup
 
@@ -87,114 +102,20 @@ Your computer talks to Arduino through a "port". Find yours:
 
 Note the port name; you'll need it in the code.
 
-### 6. Run the Script
+### 6. Run the application
 
-The script detects fingers and controls LEDs. Copy this code into a file named `controller.py`:
+The project includes `controller.py`, which detects fingers and drives the LEDs.
 
-```python
-# AUTHOR: FREDRICK MWEPU
-# DATE: 13/06/2024
-import cv2
-import pyfirmata
-from cvzone.HandTrackingModule import HandDetector
+1. Open `controller.py` in your editor and set the `comport` variable to the serial port you noted in step 5 (for example `/dev/ttyUSB0` on Linux or `COM3` on Windows).
+2. In a terminal, **activate your virtual environment** (same as in step 1), then go to the project folder if you are not already there.
+3. Run:
 
-# Initialize communication with Arduino
-# Replace '/dev/tty.usbmodem141201' with your actual port
-comport = '/dev/tty.usbmodem141201'  
-board = pyfirmata.Arduino(comport)
-
-# Define the LED pins on the Arduino Board
-led_1 = board.get_pin('d:13:o')
-led_2 = board.get_pin('d:12:o')
-led_3 = board.get_pin('d:11:o')
-led_4 = board.get_pin('d:10:o')
-led_5 = board.get_pin('d:9:o')
-
-# Function to control the LEDs based on the number of fingers up
-def led(fingerUp):
-    # Turn off all LEDs
-    if fingerUp == [0, 0, 0, 0, 0]:
-        led_1.write(0)
-        led_2.write(0)
-        led_3.write(0)
-        led_4.write(0)
-        led_5.write(0)
-    # Turn on the LEDs based on the number of fingers up
-    elif fingerUp == [0, 1, 0, 0, 0]:
-        led_1.write(1)
-        led_2.write(0)
-        led_3.write(0)
-        led_4.write(0)
-        led_5.write(0)
-    elif fingerUp == [0, 1, 1, 0, 0]:
-        led_1.write(1)
-        led_2.write(1)
-        led_3.write(0)
-        led_4.write(0)
-        led_5.write(0)
-    elif fingerUp == [0, 1, 1, 1, 0]:
-        led_1.write(1)
-        led_2.write(1)
-        led_3.write(1)
-        led_4.write(0)
-        led_5.write(0)
-    elif fingerUp == [0, 1, 1, 1, 1]:
-        led_1.write(1)
-        led_2.write(1)
-        led_3.write(1)
-        led_4.write(1)
-        led_5.write(0)
-    elif fingerUp == [1, 1, 1, 1, 1]:
-        led_1.write(1)
-        led_2.write(1)
-        led_3.write(1)
-        led_4.write(1)
-        led_5.write(1)
-
-# Initialize hand detector
-detector = HandDetector(detectionCon=0.8, maxHands=1)
-
-# Start the video capture
-video = cv2.VideoCapture(1)
-
-# Main loop to detect the number of fingers up
-try:
-    while True:
-        ret, frame = video.read()
-        if not ret:
-            break
-        frame = cv2.flip(frame, 1)
-        hands, img = detector.findHands(frame)
-        if hands:
-            lmList = hands[0]
-            fingerUp = detector.fingersUp(lmList)
-            print(fingerUp)
-            led(fingerUp)
-            if fingerUp == [0, 0, 0, 0, 0]:
-                cv2.putText(frame, 'Finger count: 0', (20, 460), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 1, cv2.LINE_AA)
-            elif fingerUp == [0, 1, 0, 0, 0]:
-                cv2.putText(frame, 'Finger count: 1', (20, 460), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 1, cv2.LINE_AA)
-            elif fingerUp == [0, 1, 1, 0, 0]:
-                cv2.putText(frame, 'Finger count: 2', (20, 460), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 1, cv2.LINE_AA)
-            elif fingerUp == [0, 1, 1, 1, 0]:
-                cv2.putText(frame, 'Finger count: 3', (20, 460), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 1, cv2.LINE_AA)
-            elif fingerUp == [0, 1, 1, 1, 1]:
-                cv2.putText(frame, 'Finger count: 4', (20, 460), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 1, cv2.LINE_AA)
-            elif fingerUp == [1, 1, 1, 1, 1]:
-                cv2.putText(frame, 'Finger count: 5', (20, 460), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 1, cv2.LINE_AA)
-        cv2.imshow("frame", frame)
-        k = cv2.waitKey(1)
-        if k == ord("k"):
-            break
-finally:
-    video.release()
-    cv2.destroyAllWindows()
-    board.exit()
+```bash
+python controller.py
 ```
 
-- Change the `comport` variable to your serial port from step 5.
-- Save the file as `controller.py` in the same folder.
-- Open Terminal, navigate to the folder (e.g., `cd /path/to/your/folder`), and run `python3 controller.py`.
+On some systems the command is `python3 controller.py` instead.
+
 - A window should open showing your camera feed. Hold up fingers, and watch the LEDs!
 
 Press 'k' to stop.
@@ -208,8 +129,9 @@ Press 'k' to stop.
 
 ## Troubleshooting
 
-- **Python not found**: Make sure it's installed and in your PATH.
-- **Library install fails**: Try `pip3` instead of `pip`, or use a virtual environment.
+- **Python not found**: Install Python 3.10.x and ensure it is on your PATH. On Windows you may use the `py` launcher: `py -3.10`.
+- **Wrong Python version**: Prefer **3.10.x**; recreate the venv with `python3.10 -m venv venv` after installing 3.10.
+- **Library install fails**: Activate the virtual environment first, then run `pip install -r requirements.txt` again. Try `python -m pip install -r requirements.txt` if `pip` is not found.
 - **Arduino upload fails**: Check USB connection, board/port selection.
 - **No LEDs lighting**: Verify connections and port in code.
 - **Camera not working**: Try changing `cv2.VideoCapture(1)` to `cv2.VideoCapture(0)`.
